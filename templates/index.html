@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="AI Prompt Saver – Save and organise your AI prompts easily." />
+  <title>AI Prompt Saver – Save a Prompt</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+
+  <!-- ── Navigation ── -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">
+        <span class="logo-icon">✦</span> AI Prompt Saver
+      </a>
+      <div class="nav-links">
+        <a href="/" class="nav-link active">Save Prompt</a>
+        <a href="/prompts" class="nav-link">View Prompts</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── Hero Header ── -->
+  <header class="hero">
+    <div class="hero-inner">
+      <h1 class="hero-title">Save Your AI Prompts</h1>
+      <p class="hero-subtitle">Keep your best prompts organised and accessible in one place.</p>
+    </div>
+  </header>
+
+  <!-- ── Main Content ── -->
+  <main class="main-container">
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}" role="alert" id="flash-message">
+            {% if category == 'success' %}
+              <span class="alert-icon">✓</span>
+            {% else %}
+              <span class="alert-icon">⚠</span>
+            {% endif %}
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <!-- Submission Form Card -->
+    <div class="card form-card">
+      <div class="card-header">
+        <h2 class="card-title">New Prompt</h2>
+        <p class="card-subtitle">Fill in the details below to save a prompt.</p>
+      </div>
+
+      <form action="/" method="POST" class="prompt-form" id="prompt-form" novalidate>
+
+        <!-- Title Field -->
+        <div class="form-group">
+          <label for="title" class="form-label">
+            Prompt Title <span class="required">*</span>
+          </label>
+          <input
+            type="text"
+            id="title"
+            name="title"
+            class="form-input"
+            placeholder="e.g. Generate a Python unit test"
+            value="{{ title if title is defined else '' }}"
+            maxlength="120"
+            required
+          />
+          <span class="form-hint">A short, descriptive name for your prompt.</span>
+        </div>
+
+        <!-- Prompt Textarea -->
+        <div class="form-group">
+          <label for="prompt" class="form-label">
+            Prompt <span class="required">*</span>
+          </label>
+          <textarea
+            id="prompt"
+            name="prompt"
+            class="form-textarea"
+            placeholder="Write your full AI prompt here…"
+            rows="7"
+            required
+          >{{ prompt if prompt is defined else '' }}</textarea>
+          <span class="form-hint">Enter the complete prompt you want to save.</span>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" id="submit-btn">
+            <span class="btn-icon">💾</span> Save Prompt
+          </button>
+          <a href="/prompts" class="btn btn-outline">View All Prompts →</a>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- Quick Stats Bar -->
+    <div class="stats-bar">
+      <span class="stats-icon">📁</span>
+      Prompts are stored locally in <code>data.csv</code>.
+      <a href="/prompts" class="stats-link">Browse your collection →</a>
+    </div>
+
+  </main>
+
+  <!-- ── Footer ── -->
+  <footer class="footer">
+    <p>AI Prompt Saver &mdash; Built with Flask &amp; Python</p>
+  </footer>
+
+  <!-- Minimal JS: auto-dismiss flash message after 4s -->
+  <script>
+    (function () {
+      const msg = document.getElementById('flash-message');
+      if (msg) {
+        setTimeout(function () {
+          msg.style.transition = 'opacity 0.5s ease';
+          msg.style.opacity = '0';
+          setTimeout(function () { msg.remove(); }, 500);
+        }, 4000);
+      }
+
+      // Client-side validation feedback
+      const form = document.getElementById('prompt-form');
+      form.addEventListener('submit', function (e) {
+        const title  = document.getElementById('title').value.trim();
+        const prompt = document.getElementById('prompt').value.trim();
+        if (!title || !prompt) {
+          e.preventDefault();
+          if (!title) document.getElementById('title').classList.add('input-error');
+          if (!prompt) document.getElementById('prompt').classList.add('input-error');
+        }
+      });
+
+      // Remove error class on input
+      ['title', 'prompt'].forEach(function (id) {
+        const el = document.getElementById(id);
+        el.addEventListener('input', function () {
+          el.classList.remove('input-error');
+        });
+      });
+    })();
+  </script>
+
+</body>
+</html>

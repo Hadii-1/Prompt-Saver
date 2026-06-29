@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="AI Prompt Saver – Browse all your saved AI prompts." />
+  <title>AI Prompt Saver – View Prompts</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+
+  <!-- ── Navigation ── -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">
+        <span class="logo-icon">✦</span> AI Prompt Saver
+      </a>
+      <div class="nav-links">
+        <a href="/" class="nav-link">Save Prompt</a>
+        <a href="/prompts" class="nav-link active">View Prompts</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── Hero Header ── -->
+  <header class="hero hero--prompts">
+    <div class="hero-inner">
+      <h1 class="hero-title">Your Prompt Library</h1>
+      <p class="hero-subtitle">
+        {% if prompts %}
+          {{ prompts | length }} prompt{{ 's' if prompts | length != 1 else '' }} saved &mdash; newest first.
+        {% else %}
+          No prompts saved yet. Be the first!
+        {% endif %}
+      </p>
+    </div>
+  </header>
+
+  <!-- ── Main Content ── -->
+  <main class="main-container">
+
+    <!-- Action bar -->
+    <div class="action-bar">
+      <a href="/" class="btn btn-primary">
+        <span class="btn-icon">＋</span> Add New Prompt
+      </a>
+    </div>
+
+    <!-- Prompts Grid -->
+    {% if prompts %}
+      <div class="prompts-grid">
+        {% for p in prompts %}
+          <article class="card prompt-card" id="prompt-{{ p.id }}">
+
+            <!-- Card Top Row: ID badge + Timestamp -->
+            <div class="prompt-meta">
+              <span class="prompt-badge">#{{ p.id }}</span>
+              <time class="prompt-timestamp" datetime="{{ p.timestamp }}">
+                🕐 {{ p.timestamp }}
+              </time>
+            </div>
+
+            <!-- Title -->
+            <h2 class="prompt-title">{{ p.title }}</h2>
+
+            <!-- Prompt body -->
+            <div class="prompt-body">
+              <pre class="prompt-text">{{ p.prompt }}</pre>
+            </div>
+
+            <!-- Copy button -->
+            <div class="prompt-actions">
+              <button
+                class="btn btn-sm btn-outline copy-btn"
+                data-copy="{{ p.prompt | e }}"
+                onclick="copyPrompt(this)"
+                aria-label="Copy prompt text"
+              >
+                📋 Copy Prompt
+              </button>
+            </div>
+
+          </article>
+        {% endfor %}
+      </div>
+
+    {% else %}
+      <!-- Empty state -->
+      <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <h2 class="empty-title">No prompts yet</h2>
+        <p class="empty-text">Save your first AI prompt to get started!</p>
+        <a href="/" class="btn btn-primary">Save My First Prompt →</a>
+      </div>
+    {% endif %}
+
+  </main>
+
+  <!-- ── Footer ── -->
+  <footer class="footer">
+    <p>AI Prompt Saver &mdash; Built with Flask &amp; Python</p>
+  </footer>
+
+  <!-- Minimal JS: copy-to-clipboard -->
+  <script>
+    function copyPrompt(btn) {
+      const text = btn.getAttribute('data-copy');
+      navigator.clipboard.writeText(text).then(function () {
+        const original = btn.textContent;
+        btn.textContent = '✓ Copied!';
+        btn.classList.add('btn-copied');
+        setTimeout(function () {
+          btn.textContent = original;
+          btn.classList.remove('btn-copied');
+        }, 2000);
+      }).catch(function () {
+        // Fallback for older browsers
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        btn.textContent = '✓ Copied!';
+        setTimeout(function () { btn.textContent = '📋 Copy Prompt'; }, 2000);
+      });
+    }
+  </script>
+
+</body>
+</html>
