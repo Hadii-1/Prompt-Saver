@@ -5,7 +5,8 @@ A simple web app to save and view AI prompts using a CSV file as storage.
 
 import csv
 import os
-from datetime import datetime
+from datetime import datetime   
+# type: ignore 
 from flask import Flask, render_template, request, redirect, url_for, flash
 
 app = Flask(__name__)
