@@ -50,7 +50,7 @@ prompt-saver/
 ### 1. Clone the repository
 
 ```
-git clone https://github.com/your-username/prompt-saver.git
+git clone [https://github.com/your-username/prompt-saver.git](https://github.com/Hadii-1/Prompt-Saver.git)
 cd prompt-saver
 ```
 
